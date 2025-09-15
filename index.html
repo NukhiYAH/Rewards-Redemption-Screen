@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WayPoints Rewards Dashboard - Interactive rewards and points management system">
+    <meta name="author" content="WayPoints Team">
+    <title>WayPoints Rewards Dashboard</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="./styles/main.css" as="style">
+    <link rel="preload" href="./scripts/app.js" as="script">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./styles/main.css">
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen" aria-hidden="true">
+        <div class="loading-spinner"></div>
+        <p>Loading WayPoints Dashboard...</p>
+    </div>
+
+    <!-- Main Application Container -->
+    <div id="app" class="app-container" role="main">
+        <!-- Header Section -->
+        <header class="app-header" role="banner">
+            <div class="header-content">
+                <div class="brand-section">
+                    <h1 class="app-title">
+                        <span class="brand-icon">🎯</span>
+                        WayPoints Dashboard
+                    </h1>
+                    <div class="user-greeting" id="user-greeting">
+                        Welcome back, <span id="user-name">Loading...</span>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="points-display" id="points-display">
+                        <div class="points-balance">
+                            <span class="points-value" id="points-value">0</span>
+                            <span class="points-label">WayPoints</span>
+                        </div>
+                        <div class="membership-badge" id="membership-badge">
+                            <span class="badge-text">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button class="action-btn primary" id="quick-redeem-btn" aria-label="Quick redeem rewards">
+                            <span class="btn-icon">🎁</span>
+                            <span class="btn-text">Redeem</span>
+                        </button>
+                        <button class="action-btn secondary" id="settings-btn" aria-label="Open settings">
+                            <span class="btn-icon">⚙️</span>
+                        </button>
+                        <button class="action-btn secondary" id="theme-toggle" aria-label="Toggle theme">
+                            <span class="btn-icon">🌙</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tab-navigation" role="tablist" aria-label="Dashboard sections">
+            <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="profile-panel" id="profile-tab">
+                <span class="tab-icon">👤</span>
+                <span class="tab-label">Profile</span>
+            </button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="rewards-panel" id="rewards-tab">
+                <span class="tab-icon">🎁</span>
+                <span class="tab-label">Rewards</span>
+            </button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="history-panel" id="history-tab">
+                <span class="tab-icon">📊</span>
+                <span class="tab-label">History</span>
+            </button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="analytics-panel" id="analytics-tab">
+                <span class="tab-icon">📈</span>
+                <span class="tab-label">Analytics</span>
+            </button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Global Search Bar -->
+            <div class="search-section">
+                <div class="search-container">
+                    <input type="search" 
+                           id="global-search" 
+                           class="search-input" 
+                           placeholder="Search rewards, transactions, or anything..."
+                           aria-label="Global search"
+                           autocomplete="off">
+                    <button class="search-btn" aria-label="Search">
+                        <span class="search-icon">🔍</span>
+                    </button>
+                </div>
+                <div class="search-filters" id="search-filters">
+                    <button class="filter-chip active" data-filter="all">All</button>
+                    <button class="filter-chip" data-filter="rewards">Rewards</button>
+                    <button class="filter-chip" data-filter="transactions">Transactions</button>
+                    <button class="filter-chip" data-filter="earnings">Earnings</button>
+                </div>
+            </div>
+
+            <!-- Tab Panels -->
+            <div class="tab-panels">
+                <!-- Profile Panel -->
+                <section id="profile-panel" class="tab-panel active" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="panel-header">
+                        <h2>Your Profile</h2>
+                        <p>Manage your account and view your WayPoints journey</p>
+                    </div>
+                    
+                    <div class="profile-grid">
+                        <!-- User Info Card -->
+                        <div class="info-card user-info">
+                            <div class="card-header">
+                                <h3>Account Information</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="user-avatar" id="user-avatar">
+                                    <img src="" alt="User avatar" id="avatar-img">
+                                </div>
+                                <div class="user-details" id="user-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Name:</span>
+                                        <span class="detail-value" id="profile-name">Loading...</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Email:</span>
+                                        <span class="detail-value" id="profile-email">Loading...</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Member Since:</span>
+                                        <span class="detail-value" id="profile-member-since">Loading...</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Last Activity:</span>
+                                        <span class="detail-value" id="profile-last-activity">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Points Summary Card -->
+                        <div class="info-card points-summary">
+                            <div class="card-header">
+                                <h3>Points Summary</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="points-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="total-earned">0</span>
+                                        <span class="stat-label">Total Earned</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="total-redeemed">0</span>
+                                        <span class="stat-label">Total Redeemed</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="current-balance">0</span>
+                                        <span class="stat-label">Current Balance</span>
+                                    </div>
+                                </div>
+                                <div class="progress-section">
+                                    <div class="progress-item">
+                                        <span class="progress-label">Next Membership Level</span>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" id="membership-progress"></div>
+                                        </div>
+                                        <span class="progress-text" id="membership-progress-text">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Activity Stats Card -->
+                        <div class="info-card activity-stats">
+                            <div class="card-header">
+                                <h3>Activity Statistics</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="activity-grid">
+                                    <div class="activity-item">
+                                        <span class="activity-icon">🚗</span>
+                                        <span class="activity-value" id="total-rides">0</span>
+                                        <span class="activity-label">Total Rides</span>
+                                    </div>
+                                    <div class="activity-item">
+                                        <span class="activity-icon">🔥</span>
+                                        <span class="activity-value" id="streak-days">0</span>
+                                        <span class="activity-label">Streak Days</span>
+                                    </div>
+                                    <div class="activity-item">
+                                        <span class="activity-icon">👥</span>
+                                        <span class="activity-value" id="referrals">0</span>
+                                        <span class="activity-label">Referrals</span>
+                                    </div>
+                                    <div class="activity-item">
+                                        <span class="activity-icon">🧠</span>
+                                        <span class="activity-value" id="quizzes">0</span>
+                                        <span class="activity-label">Quizzes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions Card -->
+                        <div class="info-card quick-actions-card">
+                            <div class="card-header">
+                                <h3>Quick Actions</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="action-buttons">
+                                    <button class="action-button" id="export-data-btn">
+                                        <span class="action-icon">📊</span>
+                                        <span class="action-text">Export Data</span>
+                                    </button>
+                                    <button class="action-button" id="share-profile-btn">
+                                        <span class="action-icon">📤</span>
+                                        <span class="action-text">Share Profile</span>
+                                    </button>
+                                    <button class="action-button" id="preferences-btn">
+                                        <span class="action-icon">⚙️</span>
+                                        <span class="action-text">Preferences</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Rewards Panel -->
+                <section id="rewards-panel" class="tab-panel" role="tabpanel" aria-labelledby="rewards-tab">
+                    <div class="panel-header">
+                        <h2>Available Rewards</h2>
+                        <p>Redeem your WayPoints for amazing rewards and perks</p>
+                    </div>
+                    
+                    <div class="rewards-controls">
+                        <div class="category-filters" id="category-filters">
+                            <button class="category-btn active" data-category="all">All Categories</button>
+                        </div>
+                        <div class="sort-controls">
+                            <select id="rewards-sort" class="sort-select" aria-label="Sort rewards">
+                                <option value="popularity">Most Popular</option>
+                                <option value="cost-low">Lowest Cost</option>
+                                <option value="cost-high">Highest Cost</option>
+                                <option value="name">Name A-Z</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="rewards-grid" id="rewards-grid">
+                        <!-- Rewards will be dynamically loaded here -->
+                    </div>
+                </section>
+
+                <!-- History Panel -->
+                <section id="history-panel" class="tab-panel" role="tabpanel" aria-labelledby="history-tab">
+                    <div class="panel-header">
+                        <h2>Transaction History</h2>
+                        <p>View all your WayPoints earnings and redemptions</p>
+                    </div>
+                    
+                    <div class="history-controls">
+                        <div class="filter-controls">
+                            <select id="history-filter" class="filter-select" aria-label="Filter transactions">
+                                <option value="all">All Transactions</option>
+                                <option value="earned">Earned Only</option>
+                                <option value="redeemed">Redeemed Only</option>
+                            </select>
+                            <select id="history-sort" class="sort-select" aria-label="Sort transactions">
+                                <option value="date-desc">Newest First</option>
+                                <option value="date-asc">Oldest First</option>
+                                <option value="amount-desc">Highest Amount</option>
+                                <option value="amount-asc">Lowest Amount</option>
+                            </select>
+                        </div>
+                        <div class="history-actions">
+                            <button class="action-btn secondary" id="export-history-btn">
+                                <span class="btn-icon">📊</span>
+                                <span class="btn-text">Export</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="transaction-list" id="transaction-list">
+                        <!-- Transactions will be dynamically loaded here -->
+                    </div>
+                    
+                    <div class="pagination" id="history-pagination">
+                        <!-- Pagination controls will be added here -->
+                    </div>
+                </section>
+
+                <!-- Analytics Panel -->
+                <section id="analytics-panel" class="tab-panel" role="tabpanel" aria-labelledby="analytics-tab">
+                    <div class="panel-header">
+                        <h2>Analytics & Insights</h2>
+                        <p>Visualize your WayPoints activity and trends</p>
+                    </div>
+                    
+                    <div class="analytics-grid">
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <h3>Points Over Time</h3>
+                            </div>
+                            <div class="card-content">
+                                <canvas id="points-timeline-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <h3>Earning Sources</h3>
+                            </div>
+                            <div class="card-content">
+                                <canvas id="earning-sources-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <h3>Activity Patterns</h3>
+                            </div>
+                            <div class="card-content">
+                                <canvas id="activity-patterns-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <h3>Redemption Categories</h3>
+                            </div>
+                            <div class="card-content">
+                                <canvas id="redemption-categories-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Container -->
+    <div id="modal-container" class="modal-container" role="dialog" aria-hidden="true">
+        <!-- Modals will be dynamically created here -->
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true">
+        <!-- Toast notifications will appear here -->
+    </div>
+
+    <!-- Scripts -->
+    <script src="./scripts/app.js" defer></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            });
+        }
+    </script>
+</body>
+</html>
